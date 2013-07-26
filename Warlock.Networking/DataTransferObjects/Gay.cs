@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Warlock.Networking
 {
-	public struct Hero
+	public struct Gay
 	{
 		public Vector2 Position;
 		public HeroState State;
 		public Guid Id;
 
-		public static Hero Produce()
+		public static Gay Produce()
 		{
-			var hero = new Hero();
+			var hero = new Gay();
 
 			var rng = new Random();
 			hero.Position = new Vector2() { X = rng.Next(), Y = rng.Next() };
