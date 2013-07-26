@@ -15,7 +15,7 @@ namespace Warlock.Networking
 		static ServiceManager()
 		{
 			Networker = new DefaultNetworker();
-			Serializer = new DefaultSerializer();
+			Serializer = new NotificationSerializer(); //DefaultSerializer();
 		}
 
 		public static void Register(Func<INetworker> valueFactory)

@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Warlock.Networking</RootNamespace>
     <AssemblyName>Warlock.Networking</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,22 +45,25 @@
     <Compile Include="ClientEventArgs.cs" />
     <Compile Include="ClientInfo.cs" />
     <Compile Include="Command.cs" />
-    <Compile Include="DataTransferObjects\Hero.cs" />
+    <Compile Include="DataTransferObjects\Gay.cs" />
     <Compile Include="DataTransferObjects\HeroState.cs" />
     <Compile Include="DataTransferObjects\Notification.cs" />
     <Compile Include="DataTransferObjects\Vector2.cs" />
+    <Compile Include="Game\Game.cs" />
+    <Compile Include="Game\GameData.cs" />
+    <Compile Include="Game\Hero.cs" />
     <Compile Include="INetworker.cs" />
-    <Compile Include="IParser.cs" />
+    <Compile Include="ISerializer.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Networker.cs" />
     <Compile Include="NetworkExtensions.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="NotificationEventArgs.cs" />
+    <Compile Include="NotificationSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServiceManager.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Include="WarlockClient.cs" />
+    <Compile Include="WarlockServer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,22 +7,19 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Warlock.Networking;
+using Warlock.Networking.Game;
 
-namespace WarlockServer
+namespace Warlock.ServerApp
 {
 	class ServerMain
 	{
 		static void Main(string[] args)
 		{
 
-			using (Server server = new Server(IPAddress.Loopback, 8080, new Logger(Console.Out)))
+			using (WarlockServer server = new WarlockServer(new Server(IPAddress.Loopback, 8080, new Logger(Console.Out))))
 			{
-				server.ClientConnected += (obj, eventArgs) =>
-					{
-						server.SendTo(eventArgs.Client.Id, "Hai from server");
-					};
 
-				server.Start();
+				server.StartSending();
 
 				server.HandleInput(Console.In, Console.Out);
 
