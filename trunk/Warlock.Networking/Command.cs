@@ -13,14 +13,14 @@ namespace Warlock.Networking
 		public string Annotation { get; private set; }
 		public Action<Server, string[]> Action { get; private set; }
 
-		private static Lazy<ReadOnlyDictionary<string, Command>> library =
-			new Lazy<ReadOnlyDictionary<string, Command>>(() =>
+		private static Lazy<Dictionary<string, Command>> library =
+			new Lazy<Dictionary<string, Command>>(() =>
 				{
 					var dict = new Dictionary<string, Command>();
 					dict.Add(Command.Send.Name, Command.Send);
 					dict.Add(Command.Kick.Name, Command.Kick);
 					dict.Add(Command.Shutdown.Name, Command.Shutdown);
-					var readable = new ReadOnlyDictionary<string, Command>(dict);
+					var readable = new Dictionary<string, Command>(dict);
 					return readable;
 				});
 
@@ -32,7 +32,7 @@ namespace Warlock.Networking
 			this.Action = action;
 		}
 
-		public static ReadOnlyDictionary<string, Command> Library
+		public static Dictionary<string, Command> Library
 		{
 			get
 			{

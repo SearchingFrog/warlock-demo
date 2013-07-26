@@ -11,7 +11,7 @@ namespace Warlock.Networking
 {
     public class DefaultNetworker : INetworker
     {
-		public void SendOverStream<T>(Stream stream, T value)
+		public void SendOverStream(Stream stream, Notification value)
 		{
 			byte[] data = ServiceManager.Serializer.Serialize(value);
 			byte[] dataLength = BitConverter.GetBytes(data.Length);
@@ -20,13 +20,13 @@ namespace Warlock.Networking
 			stream.FlushAsync();
 		}
 
-		public T ReceiveFromStream<T>(Stream stream)
+		public Notification ReceiveFromStream(Stream stream)
 		{
 			byte[] dataLength = new byte[4];
 			stream.Read(dataLength, 0, dataLength.Length);
 			byte[] data = new byte[BitConverter.ToInt32(dataLength, 0)];
 			stream.Read(data, 0, data.Length);
-			T deserialized = ServiceManager.Serializer.Deserialize<T>(data);
+			Notification deserialized = ServiceManager.Serializer.Deserialize(data);
 			return deserialized;
 		}
     }

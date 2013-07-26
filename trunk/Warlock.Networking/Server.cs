@@ -38,12 +38,6 @@ namespace Warlock.Networking
 		{
 			this.listener.Start();
 			this.AcceptClientAsync();
-			Action<Task> action = null;
-			action = (task) =>
-				{
-					Task.Run((Action)this.ReceiveDataAsync).ContinueWith(action);
-				};
-			action(Task.Delay(0));
 
 			this.log.WriteServerStarted();
 		}
@@ -57,41 +51,6 @@ namespace Warlock.Networking
 			this.Dispose();
 		}
 
-		public void HandleInput(TextReader input, TextWriter output)
-		{
-			bool isRunning = true;
-			IDictionary<string, Command> commands = new Dictionary<string, Command>(Command.Library);
-			Command help = new Command(
-				name: "help",
-				annotation: "Lists all commands.",
-				action: (srvr, args) =>
-				{
-					string intro = "*** The following are all available commands: ***";
-					output.WriteLine(intro);
-					foreach (var command in commands.Values)
-					{
-						output.WriteLine("*    - " + command.Name + "\n   " + command.Annotation);
-					}
-					output.WriteLine(new string('*', intro.Length));
-				});
-			commands.Add("help", help);
-
-			char[] delimiter = new char[] { ' ' };
-			while (isRunning)
-			{
-				string data = Console.ReadLine();
-				string[] split = data.Split(delimiter);
-				string command = split[0].ToLowerInvariant();
-				if (commands.ContainsKey(command))
-				{
-					commands[command].Action(this, split.Skip(1).ToArray());
-				}
-				else
-				{
-					output.WriteLine("No such command.");
-				}
-			}
-		}
 
 		private void OnClientConnected(ClientEventArgs args)
 		{
@@ -104,47 +63,17 @@ namespace Warlock.Networking
 			while (!this.isDisposed)
 			{
 				var client = await listener.AcceptTcpClientAsync();
-				var info = new ClientInfo(Interlocked.Increment(ref this.counter));;
+				var info = new ClientInfo(this.counter);;
 				if (this.Clients.TryAdd(info, client))
 				{
+					Interlocked.Increment(ref this.counter);
 					this.OnClientConnected(new ClientEventArgs(info));
 					this.log.WriteClientConnected(info.Id);
+					this.SendTo(info.Id, Notification.CreateHandshake(info.Id));
 				}
 			}
 		}
 
-		public void ReceiveDataAsync()
-		{
-			Lazy<ConcurrentBag<ClientInfo>> disconnected = new Lazy<ConcurrentBag<ClientInfo>>(() => new ConcurrentBag<ClientInfo>());
-			Parallel.ForEach(this.Clients, (client) =>
-			{
-				NetworkStream stream = client.Value.GetStream();
-
-				if (!client.Value.IsConnected())
-				{
-					disconnected.Value.Add(client.Key);
-					// Note: Return for parallel foreach. If you decide to use sequential foreach replace it with continue;
-					return;
-				}
-				while (stream.DataAvailable)
-				{
-					string data = ServiceManager.Networker.ReceiveFromStream<Notification>(stream).Data.ToString().Replace("\n", "");
-					// Trim the data
-					if (data.Length >= 15)
-						data = data.Substring(0, 15) + "...";
-					log.WriteDataReceived(client.Key.Id, data);
-				}
-			});
-
-			// If none has disconnected skip the rest of the function (since otherwise the call to disconnected.Value will initialize the lazy)
-			if (!disconnected.IsValueCreated)
-				return;
-
-			foreach (var client in disconnected.Value)
-			{
-				this.KickPlayer(client);			
-			}
-		}
 
 		public void SendTo(int clientId, string message)
 		{
@@ -152,8 +81,20 @@ namespace Warlock.Networking
 			TcpClient client;
 			if (this.Clients.TryGetValue(info, out client))
 			{
-				ServiceManager.Networker.SendOverStream(client.GetStream(), new Notification(message));
+				ServiceManager.Networker.SendOverStream(client.GetStream(), Notification.CreatePlainMessage(clientId, message));
 				this.log.WriteDataSent(clientId, message);
+			}
+		}
+
+
+		public void SendTo(int clientId, Notification message)
+		{
+			ClientInfo info = new ClientInfo(clientId);
+			TcpClient client;
+			if (this.Clients.TryGetValue(info, out client))
+			{
+				ServiceManager.Networker.SendOverStream(client.GetStream(), message);
+				this.log.WriteDataSent(clientId, message.ToString());
 			}
 		}
 

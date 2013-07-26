@@ -8,7 +8,7 @@ namespace Warlock.Networking
 {
 	public interface INetworker
 	{
-		void SendOverStream<T>(Stream stream, T obj);
-		T ReceiveFromStream<T>(Stream stream);
+		void SendOverStream(Stream stream, Notification obj);
+		Notification ReceiveFromStream(Stream stream);
 	}
 }

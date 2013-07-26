@@ -55,7 +55,7 @@ namespace Warlock.Networking
 		{
 			while (this.networkStream.DataAvailable)
 			{
-				yield return ServiceManager.Networker.ReceiveFromStream<Notification>(this.networkStream);
+				yield return ServiceManager.Networker.ReceiveFromStream(this.networkStream);
 			}
 		}
 
