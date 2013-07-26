@@ -7,7 +7,7 @@ namespace Warlock.Networking
 {
 	public interface ISerializer
 	{
-		byte[] Serialize<T>(T obj);
-		T Deserialize<T>(byte[] data);
+		byte[] Serialize(Notification notification);
+		Notification Deserialize(byte[] data);
 	}
 }
